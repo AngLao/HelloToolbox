@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Icon/boxin.ico</file>
+        <file>Icon/bx.ico</file>
+        <file>Icon/close.ico</file>
+        <file>Icon/data.ico</file>
+        <file>Icon/message.ico</file>
+        <file>Icon/ser.ico</file>
+        <file>Icon/small.ico</file>
+        <file>Icon/tell.ico</file>
+        <file>Icon/txxy.ico</file>
+        <file>Icon/user.ico</file>
+        <file>Icon/software.ico</file>
+    </qresource>
+</RCC>
