@@ -10,26 +10,22 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += c++17
 
 SOURCES += \
-    ParameterConfiguration.cpp \
-    SerialPortBase.cpp \
-    WaveformDisplay.cpp \
-    extend/EasyPact.c \
-    extend/panelwidget.cpp \
-    uiinit.cpp \
-    widget.cpp
+    main.cpp \
+    component/MyComboBox.cpp \
+    SerialPort/SerialPortBase.cpp \
+    Waveform/WaveformDisplay.cpp \
 
 HEADERS += \
-    ParameterConfiguration.h \
-    SerialPortBase.h \
-    WaveformDisplay.h \
-    extend/EasyPact.h \
-    extend/panelwidget.h \
-    network/networkHeader.h \
-    uiinit.h \
-    widget.h
+    main.h \
+    component/MyComboBox.h \
+    SerialPort/SerialPortBase.h \
+    Waveform/WaveformDisplay.h \
+    mavlink/V2.0 \
+    mavlink/V2.0/common \
+    mavlink/V2.0/standard \
 
 FORMS += \
-    SerialPortBase.ui
+    SerialPort/SerialPortBase.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -43,15 +39,7 @@ RESOURCES += \
 RC_ICONS = icon/software.ico
 
 #波形图qcustomplot2 dll路径
-LIBS += -L$$PWD/lib/ -lqcustomplot2
+LIBS += -L$$PWD/Waveform/ -lqcustomplot2
 
 INCLUDEPATH += $$PWD/.
 DEPENDPATH += $$PWD/.
-
-#opencv路径
-#INCLUDEPATH += D:\Work\openCv\cmakeBuild\install\include
-#               D:\Work\openCv\cmakeBuild\install\include\opencv2
-
-#LIBS += -L D:\Work\openCv\cmakeBuild\lib\libopencv_*.a
-
-DISTFILES +=
