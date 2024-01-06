@@ -1,11 +1,15 @@
 #include "SerialPortBase.h"
 #include "ui_SerialPortBase.h"
-#include "component/MyComboBox.h"
 
 SerialPortBase::SerialPortBase(void)
 {
     pWidget = new QWidget();
     pSerialPort = new QSerialPort();
+
+    //发送输入框消息按钮信号和槽
+    connect( pSerialPort,&QSerialPort::errorOccurred,this,[&](QSerialPort::SerialPortError error){
+        qDebug()<<error;
+    });
 
     ui = new class Ui_SerialPortBase();
     ui->setupUi(pWidget);
@@ -193,28 +197,41 @@ void SerialPortBase::OpenSerialPort()
 
 void SerialPortBase::DataPreprocessing()
 {
-    static QByteArray SerialPortDataBuf ;
-    SerialPortDataBuf = pSerialPort->readAll();
+    QByteArray SerialPortDataBuf = pSerialPort->readAll();
+
     //刷新接收计数
     recCount+=SerialPortDataBuf.size();
-    if(ui->RxDataForHexCheckBox->checkState() == 0)
-    {
-        /*显示时间戳*/
-        if(ui->RxDataWithTimeCheckBox->isChecked() == true)
-            ui->RxDataTextEdit->append("["+QDateTime::currentDateTime().toString("hh:mm:ss:zzz")+"]:");
-        ui->RxDataTextEdit->append(SerialPortDataBuf);
-    }else
+
+    /*显示时间戳*/
+    if(ui->RxDataWithTimeCheckBox->isChecked())
+        ui->RxDataTextEdit->append("["+QDateTime::currentDateTime().toString("hh:mm:ss:zzz")+"]:");
+
+    /*16进制显示*/
+    if(ui->RxDataForHexCheckBox->isChecked())
         ui->RxDataTextEdit->append(SerialPortDataBuf.toHex(' ').toUpper());
+    else
+        ui->RxDataTextEdit->append(SerialPortDataBuf);
 
     //解析是否存在mavlink协议数据
-    for (int var = 0; var < SerialPortDataBuf.size(); ++var) {
-        uint8_t byte = (uint8_t)SerialPortDataBuf.at(var) ;
+    foreach(uint8_t byte, SerialPortDataBuf)
+    {
+        if (mavlink_parse_char(chan, byte, &msg, &status) == 0)
+            continue;
 
-        if (mavlink_parse_char(chan, byte, &msg, &status))
-        {
-            qDebug()<<"Received message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid;
+        switch(msg.msgid){
+        case MAVLINK_MSG_ID_RAW_IMU:
+            qDebug("msg id : RAW_IMU\n");
+            mavlink_msg_raw_imu_decode(&msg, &raw_imu_data);
 
+            break;
+        case MAVLINK_MSG_ID_ATTITUDE:
+            qDebug("msg id : ATTITUDE\n");
+            mavlink_msg_attitude_decode(&msg, &imu_data);
+
+            emit gyroDataupdate(imu_data.pitchspeed,imu_data.rollspeed,imu_data.yawspeed);
+            break;
         }
+
     }
 
     //保持编辑器光标在最后一行

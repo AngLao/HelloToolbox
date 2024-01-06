@@ -2,7 +2,7 @@
 #define SERIALPORTBASE_H
 
 #pragma once
-
+#include <QObject>
 #include <QWidget>
 #include <QMouseEvent>
 
@@ -15,7 +15,7 @@
 #include <QMouseEvent>
 #include <QTextEdit>
 
-#include <mavlink/V2.0/common/mavlink.h>
+#include "../mavlink/V2.0/common/mavlink.h"
 
 class SerialPortBase: public QWidget
 {
@@ -24,10 +24,18 @@ public:
     explicit SerialPortBase(void);
     ~SerialPortBase(){};
 
-
-    class Ui_SerialPortBase* ui;
     QWidget* Widget(){return pWidget;};
     void SendData(const char *data , const int DataLen );
+private:
+
+    void RefreshCountTimerInit(void);
+    void OpenSerialPort();
+    void extracted(QByteArray &SerialPortDataBuf);
+    void DataPreprocessing();
+
+public:
+    class Ui_SerialPortBase* ui;
+
 private:
     QSerialPort *pSerialPort;
     QWidget *pWidget;
@@ -42,12 +50,10 @@ private:
     mavlink_message_t msg;
     int chan = MAVLINK_COMM_0;
 
-    void RefreshCountTimerInit(void);
-    void OpenSerialPort();
-    void DataPreprocessing();
-
+    mavlink_raw_imu_t   raw_imu_data;
+    mavlink_attitude_t  imu_data;
 signals:
-
+    void gyroDataupdate(float gyroX, float gyroY, float gyroZ);
 };
 
 #endif // SERIALPORTBASE_H
