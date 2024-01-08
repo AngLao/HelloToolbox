@@ -26,8 +26,9 @@ public:
 
     QWidget* Widget(){return pWidget;};
     void SendData(const char *data , const int DataLen );
+    bool eventFilter(QObject *, QEvent *);
 private:
-
+    void FineSerialPort();
     void RefreshCountTimerInit(void);
     void OpenSerialPort();
     void extracted(QByteArray &SerialPortDataBuf);

@@ -8,26 +8,19 @@ SerialPortBase::SerialPortBase(void)
 
     //发送输入框消息按钮信号和槽
     connect( pSerialPort,&QSerialPort::errorOccurred,this,[&](QSerialPort::SerialPortError error){
+        if(error == QSerialPort::PermissionError){
+            ui->RxDataTextEdit->append("串口连接中断");
+            OpenSerialPort();
+            FineSerialPort();
+        }
         qDebug()<<error;
     });
 
     ui = new class Ui_SerialPortBase();
     ui->setupUi(pWidget);
 
-    //提升端口选择下拉框，使其具备点击响应,点击时进行一次搜寻串口操作
-    auto FineSerialPort = [&](){
-        QStringList SerialPortNameList;/*保存搜索到的串口，存入列表中*/
-        ui->RxDataTextEdit->clear();
-        ui->RxDataTextEdit->append("存在的串口：");
-        foreach (const QSerialPortInfo &SerialPortInfo, QSerialPortInfo::availablePorts()) /*遍历可使用的串口*/
-        {
-            SerialPortNameList.append(SerialPortInfo.portName());/*把搜索到的串口存入列表中*/
-            ui->RxDataTextEdit->append(SerialPortInfo.portName() + " " + SerialPortInfo.description());
-        }
-        ui->SerialPortChooseComboBox->clear();
-        ui->SerialPortChooseComboBox->addItems(SerialPortNameList);/*将搜索到的串口显示到UI界面上*/
-    };
-    connect( ui->SerialPortChooseComboBox, &MyComboBox::clicked, this,FineSerialPort);
+    //使选择下拉框具备点击响应,点击时进行一次搜寻串口操作
+    ui->SerialPortChooseComboBox->installEventFilter(this);
 
     //连接打开按钮按钮信号和槽
     connect( ui->OpenSerialPortPushButton,&QPushButton::clicked,this, &SerialPortBase::OpenSerialPort );
@@ -91,9 +84,24 @@ SerialPortBase::SerialPortBase(void)
     });
 
     RefreshCountTimerInit();
+
     //打开软件先搜索一次存在的串口
     FineSerialPort();
 }
+
+void SerialPortBase::FineSerialPort(void){
+    QStringList SerialPortNameList;/*保存搜索到的串口，存入列表中*/
+//    ui->RxDataTextEdit->clear();
+    ui->RxDataTextEdit->append("存在的串口：");
+    foreach (const QSerialPortInfo &SerialPortInfo, QSerialPortInfo::availablePorts()) /*遍历可使用的串口*/
+    {
+        SerialPortNameList.append(SerialPortInfo.portName());/*把搜索到的串口存入列表中*/
+        ui->RxDataTextEdit->append(SerialPortInfo.portName() + " " + SerialPortInfo.description());
+    }
+    ui->SerialPortChooseComboBox->clear();
+    ui->SerialPortChooseComboBox->addItems(SerialPortNameList);/*将搜索到的串口显示到UI界面上*/
+//    qDebug()<<"find serial";
+};
 
 void SerialPortBase::RefreshCountTimerInit(void){
     //收发计数标签刷新显示
@@ -207,11 +215,14 @@ void SerialPortBase::DataPreprocessing()
         ui->RxDataTextEdit->append("["+QDateTime::currentDateTime().toString("hh:mm:ss:zzz")+"]:");
 
     /*16进制显示*/
-    if(ui->RxDataForHexCheckBox->isChecked())
-        ui->RxDataTextEdit->append(SerialPortDataBuf.toHex(' ').toUpper());
-    else
-        ui->RxDataTextEdit->append(SerialPortDataBuf);
-
+    if(ui->RxDataForHexCheckBox->isChecked()){
+        QTextCursor cursorPosition = ui->RxDataTextEdit->textCursor();
+        cursorPosition.insertText(SerialPortDataBuf.toHex(' ').toUpper());
+    }
+    else{
+        QTextCursor cursorPosition = ui->RxDataTextEdit->textCursor();
+        cursorPosition.insertText(SerialPortDataBuf);
+    }
     //解析是否存在mavlink协议数据
     foreach(uint8_t byte, SerialPortDataBuf)
     {
@@ -239,3 +250,11 @@ void SerialPortBase::DataPreprocessing()
 
 }
 
+bool SerialPortBase::eventFilter(QObject *obj, QEvent *event)
+{
+    if(event->type() == QEvent::MouseButtonPress)
+        if(obj == ui->SerialPortChooseComboBox)
+            FineSerialPort();
+
+    return QWidget::eventFilter(obj, event);
+}

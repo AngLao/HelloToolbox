@@ -51,7 +51,7 @@
     <number>5</number>
    </property>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="7,3">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="8,2">
      <property name="spacing">
       <number>3</number>
      </property>
@@ -68,32 +68,7 @@
       <number>5</number>
      </property>
      <item>
-      <widget class="QTextEdit" name="RxDataTextEdit">
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"> font:12pt &quot;楷体&quot;;</string>
-       </property>
-       <property name="autoFormatting">
-        <set>QTextEdit::AutoBulletList</set>
-       </property>
-       <property name="undoRedoEnabled">
-        <bool>false</bool>
-       </property>
-       <property name="lineWrapMode">
-        <enum>QTextEdit::WidgetWidth</enum>
-       </property>
-       <property name="lineWrapColumnOrWidth">
-        <number>1888</number>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="tabStopDistance">
-        <double>40.000000000000000</double>
-       </property>
-      </widget>
+      <widget class="QTextEdit" name="RxDataTextEdit"/>
      </item>
      <item>
       <widget class="QTextEdit" name="TxDataTextEdit">
@@ -173,7 +148,7 @@
         </widget>
        </item>
        <item>
-        <widget class="MyComboBox" name="SerialPortChooseComboBox">
+        <widget class="QComboBox" name="SerialPortChooseComboBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -406,7 +381,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
        <property name="spacing">
         <number>2</number>
        </property>
@@ -961,13 +936,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>MyComboBox</class>
-   <extends>QComboBox</extends>
-   <header location="global">combobox.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -22,7 +22,6 @@ set(PROJECT_SOURCES
         serialport/SerialPortBase.h
         serialport/SerialPortBase.cpp
         serialport/SerialPortBase.ui
-        serialport/combobox.h
 #        waveform/waveform.h
 #        waveform/waveform.cpp
 #        waveform/waveform.ui
