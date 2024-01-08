@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QWidget w;
     w.resize(800, 450);
+    w.setFont(QFont("楷体", 13));
     QMetaObject::connectSlotsByName(&w);
 
     //主窗口初始化
