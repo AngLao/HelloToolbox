@@ -15,6 +15,7 @@
 #include <QMouseEvent>
 #include <QTextEdit>
 
+#include "ui_SerialPortBase.h"
 #include "../mavlink/V2.0/common/mavlink.h"
 
 class SerialPortBase: public QWidget
@@ -24,7 +25,7 @@ public:
     explicit SerialPortBase(void);
     ~SerialPortBase(){};
 
-    QWidget* Widget(){return pWidget;};
+    QWidget* Widget(){return &widget;};
     void SendData(const char *data , const int DataLen );
     bool eventFilter(QObject *, QEvent *);
 private:
@@ -34,12 +35,12 @@ private:
     void extracted(QByteArray &SerialPortDataBuf);
     void DataPreprocessing();
 
-public:
-    class Ui_SerialPortBase* ui;
-
 private:
-    QSerialPort *pSerialPort;
-    QWidget *pWidget;
+    Ui_SerialPortBase ui;
+    QSerialPort serialport;
+    QWidget widget;
+    QTimer sendTimer;
+
     long long int recCount = 0;
     long long int sendCount = 0;
 

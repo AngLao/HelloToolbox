@@ -15,6 +15,8 @@
 #include <QThread>
 #include <QFile>
 
+#include "ui_network.h"
+
 class NetworkManage: public QObject
 {
     Q_OBJECT
@@ -22,19 +24,19 @@ public:
     explicit NetworkManage(void);
     ~NetworkManage(){};
 
-    QWidget* Widget(){return pWidget;};
+    QWidget* Widget(){return &widget;};
     void ReceiveData();
+    void DisplayImg(QByteArray &datagram);
 private:
     int StartClient();
     void StopClient();
     void SendData();
 
-public:
 private:
-    QWidget *pWidget;
-    class Ui_network *ui;
+    QWidget widget;
+    Ui_network ui;
 
-    QTimer *countTimer;
+    QTimer countTimer;
     unsigned long sendCount, receiveCount;
     QUdpSocket *udpSocket;
     QHostAddress serverAddress;
